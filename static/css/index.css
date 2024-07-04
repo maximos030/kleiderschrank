@@ -1,18 +1,41 @@
 .outfit-item {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 10px;
+    text-align: center;
+}
+.outfit-item img {
+    max-width: 100%;
+    height: auto;
+}
+.outfit-category {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 10px;
+    position: relative;
+}
+
+/* Background gradient */
+body {
+    background: linear-gradient(to right, #6a11cb, #2575fc);
+    color: white;
+}
+
+.outfit-item {
     width: 100%;
     height: 350px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: transparent;
-    /* Make the background transparent */
+    background-color: rgba(255, 255, 255, 0.1);
     margin: 10px 0;
     overflow: hidden;
     position: relative;
     border: 1px solid #ffffff;
     border-radius: 10px;
-    /* Add a subtle shadow */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0);
+    box-shadow: 0 4px 8px rgb(255, 255, 255);
 }
 
 .outfit-item img {
@@ -31,23 +54,19 @@
 
 .btn {
     background-color: rgba(255, 255, 255, 0.5);
-    /* Make the buttons semi-transparent */
     border: none;
-    /* Remove border */
     color: #000;
-    /* Black text color */
     z-index: 1;
-    /* Ensure buttons are above images */
 }
 
 .btn:hover {
     background-color: rgb(255, 255, 255);
-    /* Slightly less transparent on hover */
 }
 
 .container {
-    background-color: #ffffff;
-    /* Match this to your page background */
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 20px;
+    border-radius: 10px;
 }
 
 .save-btn {
@@ -83,4 +102,10 @@
     border: none;
     box-shadow: 0 4px 8px rgba(255, 255, 255, 0);
     border-radius: 10px;
+}
+
+footer {
+    position: relative;
+    bottom: 0;
+    width: 100%;
 }
