@@ -1,0 +1,49 @@
+.outfit-category {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 10px;
+    position: relative;
+}
+.outfit-item {
+    width: 150px;
+    height: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    border: none; /* Entfernt die Umrandung */
+}
+.container {
+    max-width: 900px;
+}
+.outfit-collage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.control-buttons {
+    position: absolute;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none; /* Macht die Buttons klickbar, aber nicht die Umgebung */
+}
+.control-buttons .arrow {
+    cursor: pointer;
+    font-size: 24px;
+    color: #6c757d; /* Dezente Farbe */
+    background: none;
+    border: none;
+    pointer-events: auto; /* Macht die Buttons klickbar */
+}
+.outfit-collage .outfit-category + .outfit-category {
+    margin-top: -20px; /* Reduzierte Lücke zwischen den Boxen */
+}
+h1 {
+    margin-bottom: 40px;
+}
