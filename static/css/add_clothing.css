@@ -1,0 +1,132 @@
+/* Background gradient */
+body {
+    background: linear-gradient(to right, #6a11cb, #2575fc);
+    color: white;
+}
+
+.outfit-item {
+    width: 100%;
+    height: 350px; /* fixed height as in index.css */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent; /* transparent background */
+    margin: 10px 0;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid transparent; /* transparent border */
+    border-radius: 10px;
+}
+
+.outfit-item img {
+    max-width: 100%;
+    max-height: 100%;
+    position: relative; /* ensure it's positioned within its container */
+}
+
+.container {
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.footer {
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
+
+.btn {
+    background-color: rgb(255, 255, 255);
+    border: none;
+    color: #000;
+}
+
+.btn:hover {
+    background-color: rgb(255, 255, 255);
+}
+
+.save-btn {
+    background-color: #007bff;
+    color: rgb(255, 255, 255);
+    border: none;
+}
+
+.save-btn:hover {
+    background-color: #0056b3;
+}
+
+.add-btn {
+    background-color: #28a745;
+    color: white;
+    border: none;
+}
+
+.add-btn:hover {
+    background-color: #218838;
+}
+
+.card-header {
+    background-color: #007bff;
+    color: white;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+.card {
+    border: none;
+    box-shadow: 0 4px 8px rgb(255, 255, 255);
+    border-radius: 10px;
+}
+
+footer {
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
+
+/* Custom styles for the form layout */
+.form-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-container .form-group {
+    margin-bottom: 15px;
+}
+
+.form-container label {
+    font-weight: bold;
+}
+
+@media (min-width: 768px) {
+    .row {
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: flex-start;
+    }
+
+    .col-md-6 {
+        flex: 0 0 auto;
+        width: 50%;
+    }
+
+    .form-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding-left: 20px;
+    }
+
+    .form-container form {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .save-btn {
+        align-self: center;
+        margin-top: 20px;
+    }
+}
