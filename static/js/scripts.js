@@ -1,39 +1,51 @@
-// static/js/scripts.js
-
-const tops = [
-    { id: 1, src: '/static/images/tops/top1.png', alt: 'Top 1' },
-    { id: 2, src: '/static/images/tops/top2.png', alt: 'Top 2' }
-];
-
-const bottoms = [
-    { id: 1, src: '/static/images/bottoms/bottom1.png', alt: 'Bottom 1' },
-    { id: 2, src: '/static/images/bottoms/bottom2.png', alt: 'Bottom 2' }
-];
-
-const shoes = [
-    { id: 1, src: '/static/images/shoes/shoe1.png', alt: 'Shoe 1' },
-    { id: 2, src: '/static/images/shoes/shoe2.png', alt: 'Shoe 2' }
-];
-
-let currentTopIndex = 0;
-let currentBottomIndex = 0;
-let currentShoeIndex = 0;
-
-function displayItem(items, containerId, index) {
-    const item = items[index];
-    $(`#${containerId}`).html(`
-        <img src="${item.src}" alt="${item.alt}">
-    `);
-}
-
-function displayCurrentItems() {
-    displayItem(tops, 'tops', currentTopIndex);
-    displayItem(bottoms, 'bottoms', currentBottomIndex);
-    displayItem(shoes, 'shoes', currentShoeIndex);
-}
-
 $(document).ready(function () {
-    displayCurrentItems();
+    let tops = [];
+    let bottoms = [];
+    let shoes = [];
+
+    function loadImages(category, callback) {
+        $.getJSON(`/get_images/${category}`, function (data) {
+            callback(data);
+        });
+    }
+
+    loadImages('top', function (data) {
+        tops = data;
+        displayCurrentItems();
+    });
+
+    loadImages('bottom', function (data) {
+        bottoms = data;
+        displayCurrentItems();
+    });
+
+    loadImages('shoe', function (data) {
+        shoes = data;
+        displayCurrentItems();
+    });
+
+    let currentTopIndex = 0;
+    let currentBottomIndex = 0;
+    let currentShoeIndex = 0;
+
+    function displayItem(items, containerId, index) {
+        const item = items[index];
+        $(`#${containerId}`).html(`
+            <img src="${item.src}" alt="${item.alt}">
+        `);
+    }
+
+    function displayCurrentItems() {
+        if (tops.length > 0) {
+            displayItem(tops, 'tops', currentTopIndex);
+        }
+        if (bottoms.length > 0) {
+            displayItem(bottoms, 'bottoms', currentBottomIndex);
+        }
+        if (shoes.length > 0) {
+            displayItem(shoes, 'shoes', currentShoeIndex);
+        }
+    }
 
     $('#prev-top').click(function () {
         currentTopIndex = (currentTopIndex > 0) ? currentTopIndex - 1 : tops.length - 1;

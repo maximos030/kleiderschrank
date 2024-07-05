@@ -21,7 +21,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Home</a>
+                        <a class="nav-link" href="/">Home</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">About</a>
@@ -51,6 +51,7 @@
                 <div class="form-container">
                     <form id="clothingForm" method="POST" action="/save_clothing">
                         <input type="hidden" name="image_path" value="{{ image_path }}">
+                        <input type="hidden" name="category" value="{{ category }}">
                         <div class="mb-3">
                             <label for="size" class="form-label">Size</label>
                             <select class="form-select" id="size" name="size" required>

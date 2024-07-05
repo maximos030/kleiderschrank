@@ -1,13 +1,15 @@
-from flask import Flask, request, render_template, redirect, url_for, flash
+from flask import Flask, request, render_template, redirect, url_for, flash, jsonify
 import os
 from PIL import Image
 from backgroundremover.backgroundremover.bg import remove
 import io
+import pandas as pd
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'  # Necessary for flash messages
+app.secret_key = b'\xf4\xec\xbd\xad\x17\x85\x8d\xaf\xf8\xb0\xef\xc5\xfb\xae\x10\x92'  # Beispiel für einen generierten Schlüssel
 UPLOAD_FOLDER = 'uploads'
 PROCESSED_FOLDER = 'processed'
+DATABASE_FILE = 'clothing_data.xlsx'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(PROCESSED_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -21,6 +23,11 @@ CATEGORIES = {
 
 for category in CATEGORIES.values():
     os.makedirs(category, exist_ok=True)
+
+# Initialize the database if it does not exist
+if not os.path.exists(DATABASE_FILE):
+    df = pd.DataFrame(columns=['id', 'image_path', 'category', 'size', 'brand', 'description'])
+    df.to_excel(DATABASE_FILE, index=False)
 
 @app.route('/')
 def index():
@@ -53,13 +60,57 @@ def upload_file():
 @app.route('/save_clothing', methods=['POST'])
 def save_clothing():
     if request.method == 'POST':
-        image_path = request.form['image_path']
-        size = request.form['size']
-        brand = request.form['brand']
-        description = request.form['description']
-        # Save the information to a database or a file
+        try:
+            image_path = request.form['image_path']
+            category = request.form['category']
+            size = request.form['size']
+            brand = request.form['brand']
+            description = request.form['description']
+        except KeyError as e:
+            flash(f'Missing data: {str(e)}', 'error')
+            return redirect(url_for('index'))
+
+        # Load existing data
+        df = pd.read_excel(DATABASE_FILE)
+        # Generate a new ID
+        new_id = get_next_id()
+        # Append new data
+        new_row = {
+            'id': new_id,
+            'image_path': image_path,
+            'category': category,
+            'size': size,
+            'brand': brand,
+            'description': description
+        }
+        df = df.append(new_row, ignore_index=True)
+        # Save back to Excel
+        df.to_excel(DATABASE_FILE, index=False)
+        
         flash('Clothing item successfully saved', 'success')
         return redirect(url_for('index'))
+
+def get_next_id():
+    df = pd.read_excel(DATABASE_FILE)
+    if df.empty:
+        return 1
+    else:
+        return df['id'].max() + 1
+
+@app.route('/get_images/<category>', methods=['GET'])
+def get_images(category):
+    if category not in CATEGORIES:
+        return jsonify({'error': 'Invalid category'}), 400
+    image_folder = CATEGORIES[category]
+    images = []
+    for filename in os.listdir(image_folder):
+        if filename.endswith('.png'):
+            images.append({
+                'id': len(images) + 1,
+                'src': url_for('static', filename=f'images/{category}s/{filename}'),
+                'alt': f'{category.capitalize()} {len(images) + 1}'
+            })
+    return jsonify(images)
 
 def save_file(file):
     file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
@@ -90,7 +141,6 @@ def save_processed_image(processed_file_path, category):
     
     # Convert backslashes to forward slashes
     return new_file_path.replace("\\", "/")
-
 
 if __name__ == '__main__':
     app.run(debug=True)
