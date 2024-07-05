@@ -9,11 +9,14 @@ app = Flask(__name__)
 app.secret_key = b'\xf4\xec\xbd\xad\x17\x85\x8d\xaf\xf8\xb0\xef\xc5\xfb\xae\x10\x92'  # Beispiel für einen generierten Schlüssel
 UPLOAD_FOLDER = 'uploads'
 PROCESSED_FOLDER = 'processed'
+TEMP_FOLDER = 'static/temp'
 DATABASE_FILE = 'clothing_data.xlsx'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(PROCESSED_FOLDER, exist_ok=True)
+os.makedirs(TEMP_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['PROCESSED_FOLDER'] = PROCESSED_FOLDER
+app.config['TEMP_FOLDER'] = TEMP_FOLDER
 
 CATEGORIES = {
     'top': 'static/images/tops',
@@ -49,11 +52,13 @@ def upload_file():
             flash('No selected file', 'error')
             return redirect(request.url)
 
-        file_path = save_file(file)
+        file_path = save_temp_file(file)
         processed_file_path = process_image(file_path)
-        new_file_path = save_processed_image(processed_file_path, category)
         flash('File successfully uploaded and processed', 'success')
-        return render_template('add_clothing.html', image_path=new_file_path, category=category)
+        
+        # Ensure the path is relative to the static folder
+        processed_file_relative_path = processed_file_path.replace(os.path.abspath('.'), '').replace('\\', '/').lstrip('/')
+        return render_template('add_clothing.html', image_path=processed_file_relative_path, category=category)
     
     return render_template('upload.html')
 
@@ -74,10 +79,12 @@ def save_clothing():
         df = pd.read_excel(DATABASE_FILE)
         # Generate a new ID
         new_id = get_next_id()
+        # Move the processed file to the final folder
+        final_image_path = move_to_final_folder(image_path, category)
         # Append new data
         new_row = {
             'id': new_id,
-            'image_path': image_path,
+            'image_path': final_image_path,
             'category': category,
             'size': size,
             'brand': brand,
@@ -112,8 +119,8 @@ def get_images(category):
             })
     return jsonify(images)
 
-def save_file(file):
-    file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+def save_temp_file(file):
+    file_path = os.path.join(app.config['TEMP_FOLDER'], file.filename)
     file.save(file_path)
     return file_path
 
@@ -123,12 +130,12 @@ def process_image(file_path):
     input_image.save(img_byte_arr, format='PNG')
     img_byte_arr = img_byte_arr.getvalue()
     output_image = remove(img_byte_arr, model_name="u2net")
-    output_path = os.path.join(app.config['PROCESSED_FOLDER'], 'output.png')
+    output_path = os.path.join(app.config['TEMP_FOLDER'], 'output.png')
     with open(output_path, 'wb') as out_file:
         out_file.write(output_image)
     return output_path
 
-def save_processed_image(processed_file_path, category):
+def move_to_final_folder(temp_path, category):
     category_folder = CATEGORIES[category]
     file_index = 1
     while True:
@@ -137,7 +144,7 @@ def save_processed_image(processed_file_path, category):
         if not os.path.exists(new_file_path):
             break
         file_index += 1
-    os.rename(processed_file_path, new_file_path)
+    os.rename(temp_path, new_file_path)
     
     # Convert backslashes to forward slashes
     return new_file_path.replace("\\", "/")
